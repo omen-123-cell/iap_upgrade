@@ -1,0 +1,5 @@
+--c99 -c --cpu Cortex-M4.fp.sp -D__EVAL -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../flash -I ../../../commen/protocol -I ../MDK-ARM
+-I.\RTE\_bootloader
+-ID:\app\keil5\ARM\PACK\ARM\CMSIS\6.2.0\CMSIS\Core\Include
+-D__UVISION_VERSION="543" -DSTM32F411xE -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F411xE
+-o bootloader\protocol.o --omf_browse bootloader\protocol.crf --depend bootloader\protocol.d --feedback "bootloader\bootloader.fed" "..\..\..\commen\protocol\protocol.c"
