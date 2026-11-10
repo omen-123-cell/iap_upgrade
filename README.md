@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 # IAP
 
 先向stm32烧录boot程序，打开上位机，打开app的bin文件，串口握手成功后升级；
 
 app有两个打印任务，通过spi协议发到esp32端（主机），再通过wifi协议发送至上位机，上位机可以选择wifi模式，在日志区检测print任务执行（printtask1和printtask2轮流执行）
 
+=======
+# iap_upgrade
+基于 STM32F411 的串口 IAP 固件升级与多通道通讯系统
+>>>>>>> ff36bb97feb4ab6de59daf0aa54678055248b1f6
