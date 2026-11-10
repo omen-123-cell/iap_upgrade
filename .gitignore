@@ -1,0 +1,23 @@
+# 编译产物
+*.o
+*.crf
+*.axf
+*.hex
+*.map
+*.dep
+*.htm
+*.build_log.htm
+*.Bak
+
+# Keil / MDK 生成文件
+*.uvguix.*
+*.uvoptx
+*.uvprojx.bak
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 日志和锁文件
+*.log
+*.lock

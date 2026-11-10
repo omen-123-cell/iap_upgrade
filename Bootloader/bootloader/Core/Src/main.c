@@ -37,7 +37,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 /* After reset, wait this long for an upgrade request before booting the app */
-#define BOOT_UPGRADE_WINDOW_MS   3000U
+#define BOOT_UPGRADE_WINDOW_MS   5000U
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,6 +57,7 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 static uint8_t Boot_IsAppValid(uint32_t app_addr);
+static int flag;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -97,10 +98,12 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   /*
-   * Boot the application after reset when a valid image is present.
-   * A short window is kept for the host to send WAIT_UPGRADE; if a frame
-   * arrives in that window the bootloader stays in upgrade mode.
-   * If the application area is blank/invalid, stay here and wait for OTA.
+   * Boot decision:
+   *   1. Run area has a valid image -> wait up to 5 s for an upgrade
+   *      request. If no frame arrives, boot the application.
+   *   2. Run area is blank/invalid but the storage area holds the factory
+   *      image -> erase the run area, copy the storage image there, boot it.
+   *   3. Neither area is valid -> stay here and wait for OTA.
    */
   if (Boot_IsAppValid(ADDR_RUN) != 0U)
   {
@@ -115,6 +118,16 @@ int main(void)
     }
 
     if (RX_flag == 0U)
+    {
+      Jump_To_RunArea(ADDR_RUN);
+    }
+  }
+  else if (Boot_IsAppValid(ADDR_MEMORY) != 0U)
+  {
+    /* No application in the run area: restore the factory image. */
+    flag = Copy_Firmware();
+    HAL_Delay(500);
+    if (flag == 0)
     {
       Jump_To_RunArea(ADDR_RUN);
     }
@@ -138,6 +151,11 @@ int main(void)
 			HAL_UART_Receive_DMA(&huart1, RXbuf, RX_BUF_SIZE);
 
 		}
+		
+		if(flag == -1)
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
 
   }
   /* USER CODE END 3 */
@@ -190,8 +208,9 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 /**
-  * @brief  Check whether a plausible application image is present.
-  * @param  app_addr: start address of the application (ADDR_RUN)
+  * @brief  Check whether a plausible run-linked image is present.
+  * @param  app_addr: image base (ADDR_RUN for the run area, ADDR_MEMORY
+  *         for the factory image kept in the storage area)
   * @retval 1 = valid, 0 = invalid/blank
   */
 static uint8_t Boot_IsAppValid(uint32_t app_addr)

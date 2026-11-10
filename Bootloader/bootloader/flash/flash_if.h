@@ -25,5 +25,6 @@ int FLASH_Write_Buffer(uint32_t start_addr, uint8_t *buf, uint32_t len);
 void FLASH_If_Read(uint32_t addr, uint8_t *buf, uint32_t len);
 uint16_t FLASH_If_CalcCRC(uint32_t addr, uint32_t len);
 void Jump_To_RunArea(uint32_t app_addr);
+int Copy_Firmware(void);
 
 #endif

@@ -100,7 +100,7 @@ void Protocol_Handler(uint8_t *frame, uint16_t len)
         Send_Response(cmd, PROTO_OK, ver, 3); 
 		}
      break;
-		
+		 
      default:
 		 {
         Send_Response(cmd, PROTO_ERR_CMD, NULL, 0);

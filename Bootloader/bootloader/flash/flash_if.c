@@ -139,3 +139,43 @@ void Jump_To_RunArea(uint32_t app_addr)
 
 }
 
+int Copy_Firmware(void)
+{
+    uint32_t i;
+    uint32_t data;
+    int ret = 0;
+
+    /* Refuse to touch the run area when the storage image looks blank. */
+    if ((*(volatile uint32_t *)ADDR_MEMORY & 0x2FFE0000U) != 0x20000000U)
+    {
+        return -1;
+    }
+
+    /* Erase the run area first: sectors 4..6 = 0x08010000..0x0805FFFF. */
+    if (FLASH_If_EraseSector(FLASH_SECTOR_4) != 0)
+    {
+        return -1;
+    }
+
+    HAL_FLASH_Unlock();
+
+    for (i = 0; i < SIZE_MEMORY; i += 4)
+    {
+        data = *(volatile uint32_t *)(ADDR_MEMORY + i);
+
+        /* 0xFFFFFFFF needs no programming: the run area is already erased. */
+        if (data == 0xFFFFFFFFU)
+        {
+            continue;
+        }
+
+        if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, ADDR_RUN + i, data) != HAL_OK)
+        {
+            ret = -1;
+            break;
+        }
+    }
+
+    HAL_FLASH_Lock();
+    return ret;
+}

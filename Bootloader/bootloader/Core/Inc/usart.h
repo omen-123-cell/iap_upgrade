@@ -46,8 +46,7 @@ extern volatile uint8_t TX_flag;
 /* USER CODE END Private defines */
 
 void MX_USART1_UART_Init(void);
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart);
+
 /* USER CODE BEGIN Prototypes */
 void Send_Response(uint8_t cmd, uint8_t status, uint8_t *data, uint16_t data_len);
 /* USER CODE END Prototypes */
